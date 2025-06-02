@@ -1,44 +1,39 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="A sleek and fast C++ IDE by Al Kayes Rifat. Write, run, and test C++ code online with input/output support and syntax highlighting." />
-  <meta name="keywords" content="C++ IDE, Online C++ Compiler, Al Kayes Rifat, Code Editor, Piston API, Monaco Editor, Web IDE, C++ Runner" />
+  <meta name="description" content="A sleek and fast C++ IDE by Al Kayes Rifat." />
+  <meta name="keywords" content="C++ IDE, Online C++ Compiler, Al Kayes Rifat, Code Editor, Piston API, Monaco Editor" />
   <meta name="author" content="Al Kayes Rifat" />
   <meta name="robots" content="index, follow" />
   <meta property="og:title" content="C++ IDE by Al Kayes Rifat" />
-  <meta property="og:description" content="Write and run C++ code online with a beautiful Monaco editor and real-time execution." />
+  <meta property="og:description" content="Write and run C++ code online." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://alkayesrifat.netlify.app" />
   <meta property="og:image" content="https://alkayesrifat.netlify.app/assets/preview.png" />
   <title>C++ IDE By Al Kayes Rifat</title>
+
   <style>
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     html, body {
-      margin: 0;
-      height: 100%;
+      margin: 0; height: 100%;
       background: #1e1e1e;
       font-family: Consolas, monospace;
-      color: white;
-      overflow: hidden;
+      color: white; overflow: hidden;
     }
 
     h2 {
-      margin: 0;
-      padding: 10px;
+      margin: 0; padding: 10px;
       background: #252526;
       border-bottom: 1px solid #333;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
-    h2 a {
-      color: #4FC3F7;
-      text-decoration: none;
-    }
+    h2 a { color: #4FC3F7; text-decoration: none; }
 
     .main-container {
       display: flex;
@@ -48,10 +43,8 @@
 
     .left-panel {
       width: 70%;
-      min-width: 200px;
       display: flex;
       flex-direction: column;
-      background-color: #1e1e1e;
     }
 
     .resizer {
@@ -64,9 +57,7 @@
       flex: 1;
       display: flex;
       flex-direction: column;
-      background-color: #1e1e1e;
       padding: 10px;
-      min-width: 250px;
     }
 
     #editor {
@@ -91,13 +82,17 @@
       flex: 1;
     }
 
+    .button-group {
+      padding: 10px;
+    }
+
     button {
-      padding: 10px 20px;
+      padding: 10px 15px;
+      margin-right: 10px;
       background-color: #007acc;
       color: white;
       border: none;
       cursor: pointer;
-      margin: 10px;
       border-radius: 4px;
       font-weight: bold;
     }
@@ -106,13 +101,8 @@
       background-color: #005a9e;
     }
 
-    ::-webkit-scrollbar {
-      width: 8px;
-    }
-
-    ::-webkit-scrollbar-thumb {
-      background-color: #555;
-    }
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-thumb { background-color: #555; }
   </style>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.34.1/min/vs/loader.min.js"></script>
@@ -120,14 +110,18 @@
 <body>
 
   <h2>
-    🧪 C++ IDE By 
+    🧪 C++ IDE  
     <a href="https://alkayesrifat.netlify.app" target="_blank">Al Kayes Rifat</a>
+    <div class="button-group">
+      <button onclick="runCode()">▶️ Run</button>
+      <button onclick="downloadCode()">⬇️ Download</button>
+      <button onclick="shareCode()">🔗 Share</button>
+    </div>
   </h2>
 
   <div class="main-container">
     <div class="left-panel" id="leftPanel">
       <div id="editor"></div>
-      <button onclick="runCode()">▶️ Run</button>
     </div>
 
     <div class="resizer" id="dragBar"></div>
@@ -177,11 +171,8 @@ int main() {
         lineNumbers: "on"
       });
 
-      editor.focus();
-
       editor.onDidChangeModelContent(() => {
-        const code = editor.getValue();
-        localStorage.setItem(STORAGE_KEY, code);
+        localStorage.setItem(STORAGE_KEY, editor.getValue());
       });
     });
 
@@ -205,9 +196,28 @@ int main() {
 
         const data = await response.json();
         outputEl.textContent = data.run.stdout || data.run.stderr || "⚠️ No output.";
-      } catch (err) {
+      } catch {
         outputEl.textContent = "❌ Error running code.";
       }
+    }
+
+    function downloadCode() {
+      const code = editor.getValue();
+      const blob = new Blob([code], { type: "text/plain" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "main.cpp";
+      a.click();
+    }
+
+    function shareCode() {
+      const code = editor.getValue();
+      navigator.clipboard.writeText(code).then(() => {
+        alert("✅ Code copied to clipboard!");
+        window.open("https://codeshare-al-kayes.netlify.app/", "_blank");
+      }).catch(() => {
+        alert("❌ Failed to copy code.");
+      });
     }
 
     document.addEventListener("keydown", function (e) {
