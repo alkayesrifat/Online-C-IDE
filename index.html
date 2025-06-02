@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>C++ IDE By Al Kayes Rifat</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      height: 100%;
+      background: #1e1e1e;
+      font-family: Consolas, monospace;
+      color: white;
+      overflow: hidden;
+    }
+
+    h2 {
+      margin: 0;
+      padding: 10px;
+      background: #252526;
+      border-bottom: 1px solid #333;
+    }
+
+    .main-container {
+      display: flex;
+      height: calc(100% - 50px);
+      width: 100%;
+    }
+
+    .left-panel {
+      width: 70%;
+      min-width: 200px;
+      display: flex;
+      flex-direction: column;
+      background-color: #1e1e1e;
+    }
+
+    .resizer {
+      width: 5px;
+      background: #444;
+      cursor: col-resize;
+    }
+
+    .right-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background-color: #1e1e1e;
+      padding: 10px;
+      min-width: 250px;
+    }
+
+    #editor {
+      flex: 1;
+    }
+
+    textarea, pre {
+      background: #252526;
+      color: #dcdcdc;
+      border: none;
+      font-size: 14px;
+      font-family: inherit;
+      padding: 10px;
+      resize: vertical;
+      overflow: auto;
+      margin-bottom: 10px;
+      border-radius: 5px;
+    }
+
+    #output {
+      white-space: pre-wrap;
+      flex: 1;
+    }
+
+    button {
+      padding: 10px 20px;
+      background-color: #007acc;
+      color: white;
+      border: none;
+      cursor: pointer;
+      margin: 10px;
+      border-radius: 4px;
+      font-weight: bold;
+    }
+
+    button:hover {
+      background-color: #005a9e;
+    }
+
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background-color: #555;
+    }
+  </style>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.34.1/min/vs/loader.min.js"></script>
+</head>
+<body>
+
+  <h2>🧪 C++ IDE By Al Kayes Rifat</h2>
+
+  <div class="main-container">
+    <!-- Editor Panel -->
+    <div class="left-panel" id="leftPanel">
+      <div id="editor"></div>
+      <button onclick="runCode()">▶️ Run</button>
+    </div>
+
+    <!-- Resizer -->
+    <div class="resizer" id="dragBar"></div>
+
+    <!-- Input/Output Panel -->
+    <div class="right-panel">
+      <textarea id="input" placeholder="🔤 Optional input..."></textarea>
+      <pre id="output">Waiting...</pre>
+    </div>
+  </div>
+
+  <script>
+    let editor;
+    const STORAGE_KEY = "cpp-ide-code";
+    let currentFontSize = 16;
+
+    // Load Monaco
+    require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.34.1/min/vs' } });
+    require(["vs/editor/editor.main"], function () {
+      const savedCode = localStorage.getItem(STORAGE_KEY) ||
+        `#include <iostream>\nusing namespace std;\n\nint main() {\n    cout << "Assalamualaikum. I am Al Kayes Rifat";\n    return 0;\n}`;
+
+      editor = monaco.editor.create(document.getElementById("editor"), {
+        value: savedCode,
+        language: "cpp",
+        theme: "vs-dark",
+        fontSize: currentFontSize,
+        automaticLayout: true,
+        minimap: { enabled: true },
+        lineNumbers: "on"
+      });
+
+      editor.onDidChangeModelContent(() => {
+        const code = editor.getValue();
+        localStorage.setItem(STORAGE_KEY, code);
+      });
+    });
+
+    // Run Code
+    async function runCode() {
+      const code = editor.getValue();
+      const input = document.getElementById("input").value;
+      const outputEl = document.getElementById("output");
+      outputEl.textContent = "⏳ Running...";
+
+      try {
+        const response = await fetch("https://emkc.org/api/v2/piston/execute", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            language: "cpp",
+            version: "10.2.0",
+            files: [{ name: "main.cpp", content: code }],
+            stdin: input
+          })
+        });
+
+        const data = await response.json();
+        outputEl.textContent = data.run.stdout || data.run.stderr || "⚠️ No output.";
+      } catch (err) {
+        outputEl.textContent = "❌ Error running code.";
+      }
+    }
+
+    // Ctrl + Enter = Run Code
+    document.addEventListener("keydown", function (e) {
+      if (e.ctrlKey && e.key === "Enter") {
+        e.preventDefault();
+        runCode();
+      }
+    });
+
+    // Zoom in/out with Ctrl + Scroll
+    window.addEventListener("wheel", function (e) {
+      if (e.ctrlKey) {
+        e.preventDefault();
+        currentFontSize += (e.deltaY < 0 ? 1 : -1);
+        currentFontSize = Math.max(10, currentFontSize);
+        if (editor) editor.updateOptions({ fontSize: currentFontSize });
+      }
+    }, { passive: false });
+
+    // Resizable panels
+    const dragBar = document.getElementById("dragBar");
+    const leftPanel = document.getElementById("leftPanel");
+
+    dragBar.addEventListener("mousedown", function (e) {
+      e.preventDefault();
+      document.addEventListener("mousemove", resizePanel);
+      document.addEventListener("mouseup", stopResize);
+    });
+
+    function resizePanel(e) {
+      const newWidth = Math.max(200, e.clientX);
+      leftPanel.style.width = newWidth + "px";
+    }
+
+    function stopResize() {
+      document.removeEventListener("mousemove", resizePanel);
+      document.removeEventListener("mouseup", stopResize);
+    }
+  </script>
+</body>
+</html>
