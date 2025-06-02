@@ -3,29 +3,32 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="A sleek and fast C++ IDE by Al Kayes Rifat." />
-  <meta name="keywords" content="C++ IDE, Online C++ Compiler, Al Kayes Rifat, Code Editor, Piston API, Monaco Editor" />
+  <title>C++ IDE by Al Kayes Rifat</title>
+  <meta name="description" content="Online C++ IDE built by Al Kayes Rifat" />
+  <meta name="keywords" content="C++, IDE, Online Compiler, Kayes, Code Editor, Piston, Monaco" />
   <meta name="author" content="Al Kayes Rifat" />
   <meta name="robots" content="index, follow" />
   <meta property="og:title" content="C++ IDE by Al Kayes Rifat" />
-  <meta property="og:description" content="Write and run C++ code online." />
+  <meta property="og:description" content="A sleek C++ IDE built by Kayes Rifat with Piston & Monaco." />
   <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://alkayesrifat.netlify.app" />
+  <meta property="og:url" content="https://alkayesrifat.netlify.app/" />
   <meta property="og:image" content="https://alkayesrifat.netlify.app/assets/preview.png" />
-  <title>C++ IDE By Al Kayes Rifat</title>
 
   <style>
     * { box-sizing: border-box; }
 
-    html, body {
-      margin: 0; height: 100%;
+    body, html {
+      margin: 0;
+      height: 100%;
       background: #1e1e1e;
+      color: #fff;
       font-family: Consolas, monospace;
-      color: white; overflow: hidden;
+      overflow: hidden;
     }
 
     h2 {
-      margin: 0; padding: 10px;
+      margin: 0;
+      padding: 10px;
       background: #252526;
       border-bottom: 1px solid #333;
       display: flex;
@@ -33,7 +36,10 @@
       align-items: center;
     }
 
-    h2 a { color: #4FC3F7; text-decoration: none; }
+    h2 a {
+      color: #4FC3F7;
+      text-decoration: none;
+    }
 
     .main-container {
       display: flex;
@@ -69,12 +75,11 @@
       color: #dcdcdc;
       border: none;
       font-size: 14px;
-      font-family: inherit;
       padding: 10px;
       resize: vertical;
       overflow: auto;
-      margin-bottom: 10px;
       border-radius: 5px;
+      margin-bottom: 10px;
     }
 
     #output {
@@ -108,7 +113,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.34.1/min/vs/loader.min.js"></script>
 </head>
 <body>
-
   <h2>
     🧪 C++ IDE  
     <a href="https://alkayesrifat.netlify.app" target="_blank">Al Kayes Rifat</a>
@@ -123,9 +127,7 @@
     <div class="left-panel" id="leftPanel">
       <div id="editor"></div>
     </div>
-
     <div class="resizer" id="dragBar"></div>
-
     <div class="right-panel">
       <textarea id="input" placeholder="🌤 Optional input..."></textarea>
       <pre id="output">Waiting...</pre>
@@ -159,10 +161,10 @@ int main() {
 
     require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.34.1/min/vs' } });
     require(["vs/editor/editor.main"], function () {
-      const savedCode = localStorage.getItem(STORAGE_KEY) || defaultCode;
+      const saved = localStorage.getItem(STORAGE_KEY) || defaultCode;
 
       editor = monaco.editor.create(document.getElementById("editor"), {
-        value: savedCode,
+        value: saved,
         language: "cpp",
         theme: "vs-dark",
         fontSize: currentFontSize,
@@ -174,6 +176,9 @@ int main() {
       editor.onDidChangeModelContent(() => {
         localStorage.setItem(STORAGE_KEY, editor.getValue());
       });
+
+      // Ctrl+Enter to run
+      editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, runCode);
     });
 
     async function runCode() {
@@ -194,10 +199,10 @@ int main() {
           })
         });
 
-        const data = await response.json();
-        outputEl.textContent = data.run.stdout || data.run.stderr || "⚠️ No output.";
+        const result = await response.json();
+        outputEl.textContent = result.run.stdout || result.run.stderr || "⚠️ No output.";
       } catch {
-        outputEl.textContent = "❌ Error running code.";
+        outputEl.textContent = "❌ Failed to run code.";
       }
     }
 
@@ -216,18 +221,11 @@ int main() {
         alert("✅ Code copied to clipboard!");
         window.open("https://codeshare-al-kayes.netlify.app/", "_blank");
       }).catch(() => {
-        alert("❌ Failed to copy code.");
+        alert("❌ Clipboard copy failed.");
       });
     }
 
-    document.addEventListener("keydown", function (e) {
-      if (e.ctrlKey && e.key === "Enter") {
-        e.preventDefault();
-        runCode();
-      }
-    });
-
-    window.addEventListener("wheel", function (e) {
+    window.addEventListener("wheel", (e) => {
       if (e.ctrlKey) {
         e.preventDefault();
         currentFontSize += (e.deltaY < 0 ? 1 : -1);
