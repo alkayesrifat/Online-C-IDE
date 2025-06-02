@@ -4,21 +4,42 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>C++ IDE by Al Kayes Rifat</title>
+  <meta name="description" content="Online C++ IDE built by Al Kayes Rifat" />
+  <meta name="keywords" content="C++, IDE, Online Compiler, Kayes, Code Editor, Piston, Monaco" />
+  <meta name="author" content="Al Kayes Rifat" />
+  <meta name="robots" content="index, follow" />
+  <meta property="og:title" content="C++ IDE by Al Kayes Rifat" />
+  <meta property="og:description" content="A sleek C++ IDE built by Kayes Rifat with Piston & Monaco." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://alkayesrifat.netlify.app/" />
+  <meta property="og:image" content="https://alkayesrifat.netlify.app/assets/preview.png" />
+
   <style>
     * { box-sizing: border-box; }
+
     body, html {
-      margin: 0; height: 100%; background: #1e1e1e; color: white; font-family: Consolas, monospace; overflow: hidden;
+      margin: 0;
+      height: 100%;
+      background: #1e1e1e;
+      color: #fff;
+      font-family: Consolas, monospace;
+      overflow: hidden;
     }
+
     h2 {
-      margin: 0; padding: 10px; background: #252526; border-bottom: 1px solid #333;
-      display: flex; justify-content: space-between; align-items: center;
+      margin: 0;
+      padding: 10px;
+      background: #252526;
+      border-bottom: 1px solid #333;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
-    h2 a { color: #4FC3F7; text-decoration: none; }
-    .button-group button {
-      padding: 10px 15px; margin-left: 10px; background: #007acc; border: none; border-radius: 4px;
-      cursor: pointer; font-weight: bold; color: white;
+
+    h2 a {
+      color: #4FC3F7;
+      text-decoration: none;
     }
-    .button-group button:hover { background: #005a9e; }
 
     .main-container {
       display: flex;
@@ -43,10 +64,11 @@
       display: flex;
       flex-direction: column;
       padding: 10px;
-      min-width: 250px;
     }
 
-    #editor { flex: 1; }
+    #editor {
+      flex: 1;
+    }
 
     textarea, pre {
       background: #252526;
@@ -58,74 +80,46 @@
       overflow: auto;
       border-radius: 5px;
       margin-bottom: 10px;
-      white-space: pre-wrap; /* default for wrapping */
-      word-wrap: break-word;
     }
+
     #output {
       white-space: pre-wrap;
       flex: 1;
     }
 
-    /* Scrollbar */
+    .button-group {
+      padding: 10px;
+    }
+
+    button {
+      padding: 10px 15px;
+      margin-right: 10px;
+      background-color: #007acc;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 4px;
+      font-weight: bold;
+    }
+
+    button:hover {
+      background-color: #005a9e;
+    }
+
     ::-webkit-scrollbar { width: 8px; }
     ::-webkit-scrollbar-thumb { background-color: #555; }
-
-    /* --- MOBILE SPECIFIC --- */
-    @media (max-width: 768px) {
-      .main-container {
-        flex-direction: column;
-      }
-      .left-panel {
-        width: 100% !important;
-        height: 50vh;
-      }
-      .resizer {
-        display: none;
-      }
-      .right-panel {
-        height: 40vh;
-        min-width: 100%;
-        display: none; /* hide initially on mobile */
-      }
-      .right-panel.show {
-        display: flex;
-      }
-      /* Show the toggle I/O button on mobile */
-      #toggleIOBtn {
-        display: inline-block;
-        margin-left: 10px;
-        background: #007acc;
-        border: none;
-        border-radius: 4px;
-        padding: 8px 12px;
-        color: white;
-        cursor: pointer;
-        font-weight: bold;
-      }
-      #toggleIOBtn:hover {
-        background: #005a9e;
-      }
-      /* Ensure word wrap on mobile input and output explicitly */
-      textarea, #output {
-        white-space: pre-wrap !important;
-        word-wrap: break-word !important;
-      }
-    }
   </style>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.34.1/min/vs/loader.min.js"></script>
 </head>
 <body>
-
   <h2>
-    🧪 C++ IDE by 
+    🧪 C++ IDE  
     <a href="https://alkayesrifat.netlify.app" target="_blank">Al Kayes Rifat</a>
     <div class="button-group">
       <button onclick="runCode()">▶️ Run</button>
       <button onclick="downloadCode()">⬇️ Download</button>
       <button onclick="shareCode()">🔗 Share</button>
-      <!-- Toggle I/O for mobile only -->
-      <button id="toggleIOBtn" style="display:none" onclick="toggleIO()">📝 Input/Output</button>
     </div>
   </h2>
 
@@ -134,7 +128,7 @@
       <div id="editor"></div>
     </div>
     <div class="resizer" id="dragBar"></div>
-    <div class="right-panel" id="rightPanel">
+    <div class="right-panel">
       <textarea id="input" placeholder="🌤 Optional input..."></textarea>
       <pre id="output">Waiting...</pre>
     </div>
@@ -185,11 +179,6 @@ int main() {
 
       // Ctrl+Enter to run
       editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, runCode);
-
-      // Show toggle button on mobile only
-      if(window.matchMedia("(max-width: 768px)").matches){
-        document.getElementById("toggleIOBtn").style.display = "inline-block";
-      }
     });
 
     async function runCode() {
@@ -215,10 +204,6 @@ int main() {
       } catch {
         outputEl.textContent = "❌ Failed to run code.";
       }
-      // On mobile, show output panel automatically after run
-      if(window.matchMedia("(max-width: 768px)").matches){
-        showIOPanel(true);
-      }
     }
 
     function downloadCode() {
@@ -240,31 +225,6 @@ int main() {
       });
     }
 
-    // Toggle I/O panel visibility on mobile
-    const rightPanel = document.getElementById("rightPanel");
-    const toggleBtn = document.getElementById("toggleIOBtn");
-
-    function toggleIO() {
-      if(rightPanel.classList.contains("show")){
-        rightPanel.classList.remove("show");
-        toggleBtn.textContent = "📝 Input/Output";
-      } else {
-        rightPanel.classList.add("show");
-        toggleBtn.textContent = "✖️ Close I/O";
-      }
-    }
-
-    function showIOPanel(show) {
-      if(show){
-        rightPanel.classList.add("show");
-        toggleBtn.textContent = "✖️ Close I/O";
-      } else {
-        rightPanel.classList.remove("show");
-        toggleBtn.textContent = "📝 Input/Output";
-      }
-    }
-
-    // Font size zoom with Ctrl+wheel
     window.addEventListener("wheel", (e) => {
       if (e.ctrlKey) {
         e.preventDefault();
@@ -274,31 +234,24 @@ int main() {
       }
     }, { passive: false });
 
-    // Resizable panels
     const dragBar = document.getElementById("dragBar");
     const leftPanel = document.getElementById("leftPanel");
-    const rightPanelElem = document.getElementById("rightPanel");
-    let isDragging = false;
 
-    dragBar.addEventListener("mousedown", () => {
-      isDragging = true;
-      document.body.style.userSelect = "none";
+    dragBar.addEventListener("mousedown", function (e) {
+      e.preventDefault();
+      document.addEventListener("mousemove", resizePanel);
+      document.addEventListener("mouseup", stopResize);
     });
 
-    window.addEventListener("mouseup", () => {
-      isDragging = false;
-      document.body.style.userSelect = "auto";
-    });
+    function resizePanel(e) {
+      const newWidth = Math.max(200, e.clientX);
+      leftPanel.style.width = newWidth + "px";
+    }
 
-    window.addEventListener("mousemove", (e) => {
-      if (!isDragging) return;
-      const containerWidth = window.innerWidth;
-      const newWidth = e.clientX;
-      if (newWidth > 200 && newWidth < containerWidth - 200) {
-        leftPanel.style.width = newWidth + "px";
-      }
-    });
+    function stopResize() {
+      document.removeEventListener("mousemove", resizePanel);
+      document.removeEventListener("mouseup", stopResize);
+    }
   </script>
-
 </body>
 </html>
