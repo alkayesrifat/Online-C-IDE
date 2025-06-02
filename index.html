@@ -32,6 +32,8 @@
       padding: 10px;
       background: #252526;
       border-bottom: 1px solid #333;
+      font-size: 16px;
+      text-align: center;
     }
 
     h2 a {
@@ -43,6 +45,7 @@
       display: flex;
       height: calc(100% - 50px);
       width: 100%;
+      flex-direction: row;
     }
 
     .left-panel {
@@ -70,6 +73,7 @@
 
     #editor {
       flex: 1;
+      min-height: 200px;
     }
 
     textarea, pre {
@@ -83,11 +87,14 @@
       overflow: auto;
       margin-bottom: 10px;
       border-radius: 5px;
+      width: 100%;
     }
 
     #output {
       white-space: pre-wrap;
       flex: 1;
+      overflow-y: auto;
+      max-height: 300px;
     }
 
     button {
@@ -99,6 +106,7 @@
       margin: 10px;
       border-radius: 4px;
       font-weight: bold;
+      align-self: flex-start;
     }
 
     button:hover {
@@ -111,6 +119,38 @@
 
     ::-webkit-scrollbar-thumb {
       background-color: #555;
+    }
+
+    /* Responsive layout */
+    @media (max-width: 768px) {
+      .main-container {
+        flex-direction: column;
+        height: auto;
+      }
+
+      .left-panel,
+      .right-panel {
+        width: 100%;
+        min-width: unset;
+        padding: 10px;
+      }
+
+      .resizer {
+        display: none;
+      }
+
+      button {
+        align-self: stretch;
+        width: 100%;
+      }
+
+      #editor {
+        height: 300px;
+      }
+
+      #output {
+        max-height: 200px;
+      }
     }
   </style>
 
